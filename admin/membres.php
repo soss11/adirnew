@@ -3,8 +3,9 @@
  * Mini CRM - Gestion des membres
  */
 
-$pageTitle = 'Membres';
-require_once __DIR__ . '/../includes/header.php';
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/functions.php';
 
 requireRole('gestionnaire');
 
@@ -27,8 +28,23 @@ if ($action === 'delete' && $memberId > 0) {
     exit;
 }
 
+// Ajouter une note (traiter avant header.php)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_note'])) {
+    $noteUserId = (int)$_POST['note_user_id'];
+    $noteContent = trim($_POST['note_content'] ?? '');
+
+    if (!empty($noteContent)) {
+        $currentUser = getCurrentUser();
+        $stmt = $pdo->prepare("INSERT INTO membre_notes (user_id, auteur_id, contenu) VALUES (?, ?, ?)");
+        $stmt->execute([$noteUserId, $currentUser['id'], $noteContent]);
+        setFlashMessage('success', 'Note ajoutée.');
+        header("Location: membres.php?action=view&id=$noteUserId");
+        exit;
+    }
+}
+
 // Traitement du formulaire d'ajout/modification
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['add_note'])) {
     $editId = (int)($_POST['edit_id'] ?? 0);
     $email = trim($_POST['email'] ?? '');
     $nom = trim($_POST['nom'] ?? '');
@@ -163,20 +179,6 @@ if ($action === 'view' && $memberId > 0) {
     }
 }
 
-// Ajouter une note
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_note'])) {
-    $noteUserId = (int)$_POST['note_user_id'];
-    $noteContent = trim($_POST['note_content'] ?? '');
-
-    if (!empty($noteContent)) {
-        $stmt = $pdo->prepare("INSERT INTO membre_notes (user_id, auteur_id, contenu) VALUES (?, ?, ?)");
-        $stmt->execute([$noteUserId, $currentUser['id'], $noteContent]);
-        setFlashMessage('success', 'Note ajoutée.');
-        header("Location: membres.php?action=view&id=$noteUserId");
-        exit;
-    }
-}
-
 // Filtres
 $search = trim($_GET['search'] ?? '');
 $filterCotisation = $_GET['cotisation'] ?? '';
@@ -228,6 +230,10 @@ function getCotisationBadge($dateFin) {
         default: return '<span class="badge" style="background:#eee;color:#666;">Aucune</span>';
     }
 }
+
+// Maintenant inclure le header (après tout le traitement POST)
+$pageTitle = 'Membres';
+require_once __DIR__ . '/../includes/header.php';
 ?>
 
 <?php if ($action === 'view' && $viewMember): ?>
@@ -242,7 +248,9 @@ function getCotisationBadge($dateFin) {
             <?php echo e($viewMember['prenom'] . ' ' . $viewMember['nom']); ?>
         </h3>
         <div class="btn-group">
-            <a href="?action=edit&id=<?php echo $viewMember['id']; ?>" class="btn btn-sm btn-primary">Modifier</a>
+            <a href="carte-membre.php?id=<?php echo $viewMember['id']; ?>" class="btn btn-sm btn-success" target="_blank">Carte membre</a>
+            <a href="documents.php?membre_id=<?php echo $viewMember['id']; ?>" class="btn btn-sm btn-primary">Documents</a>
+            <a href="?action=edit&id=<?php echo $viewMember['id']; ?>" class="btn btn-sm btn-secondary">Modifier</a>
             <a href="membres.php" class="btn btn-sm btn-secondary">Retour</a>
         </div>
     </div>

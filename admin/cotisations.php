@@ -3,20 +3,15 @@
  * Mini CRM - Gestion des cotisations
  */
 
-$pageTitle = 'Cotisations';
-require_once __DIR__ . '/../includes/header.php';
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/functions.php';
 
 requireRole('gestionnaire');
 
 $error = '';
 $action = $_GET['action'] ?? '';
 $cotisationId = (int)($_GET['id'] ?? 0);
-
-// Récupérer les types de cotisation
-$cotisationTypes = $pdo->query("SELECT * FROM cotisation_types WHERE actif = 1 ORDER BY montant")->fetchAll();
-
-// Récupérer les membres
-$membres = $pdo->query("SELECT id, nom, prenom, email FROM users WHERE role = 'membre' AND actif = 1 ORDER BY nom, prenom")->fetchAll();
 
 // Supprimer une cotisation
 if ($action === 'delete' && $cotisationId > 0) {
@@ -33,6 +28,16 @@ if ($action === 'payer' && $cotisationId > 0) {
     $stmt->execute([$cotisationId]);
     setFlashMessage('success', 'Cotisation marquée comme payée.');
     header('Location: cotisations.php');
+    exit;
+}
+
+// Supprimer un type
+if ($action === 'delete_type' && isset($_GET['type_id'])) {
+    $typeId = (int)$_GET['type_id'];
+    $stmt = $pdo->prepare("UPDATE cotisation_types SET actif = 0 WHERE id = ?");
+    $stmt->execute([$typeId]);
+    setFlashMessage('success', 'Type de cotisation supprimé.');
+    header('Location: cotisations.php?tab=types');
     exit;
 }
 
@@ -98,15 +103,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_type'])) {
     }
 }
 
-// Supprimer un type
-if ($action === 'delete_type' && isset($_GET['type_id'])) {
-    $typeId = (int)$_GET['type_id'];
-    $stmt = $pdo->prepare("UPDATE cotisation_types SET actif = 0 WHERE id = ?");
-    $stmt->execute([$typeId]);
-    setFlashMessage('success', 'Type de cotisation supprimé.');
-    header('Location: cotisations.php?tab=types');
-    exit;
-}
+// Récupérer les types de cotisation
+$cotisationTypes = $pdo->query("SELECT * FROM cotisation_types WHERE actif = 1 ORDER BY montant")->fetchAll();
+
+// Récupérer les membres
+$membres = $pdo->query("SELECT id, nom, prenom, email FROM users WHERE role = 'membre' AND actif = 1 ORDER BY nom, prenom")->fetchAll();
 
 // Récupérer cotisation à éditer
 $editCotisation = null;
@@ -179,6 +180,10 @@ $stats['revenus_annee'] = $stmt->fetchColumn();
 
 // Rafraîchir les types
 $cotisationTypes = $pdo->query("SELECT * FROM cotisation_types WHERE actif = 1 ORDER BY montant")->fetchAll();
+
+// Maintenant inclure le header (après tout le traitement POST)
+$pageTitle = 'Cotisations';
+require_once __DIR__ . '/../includes/header.php';
 ?>
 
 <!-- Stats -->

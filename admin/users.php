@@ -3,11 +3,13 @@
  * Mini CRM - Gestion des utilisateurs
  */
 
-$pageTitle = 'Utilisateurs';
-require_once __DIR__ . '/../includes/header.php';
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/functions.php';
 
 requireRole('gestionnaire');
 
+$currentUser = getCurrentUser();
 $error = '';
 $success = '';
 
@@ -127,6 +129,10 @@ if ($action === 'edit' && $userId > 0) {
 // Liste des utilisateurs
 $stmt = $pdo->query("SELECT * FROM users ORDER BY created_at DESC");
 $users = $stmt->fetchAll();
+
+// Maintenant inclure le header (après tout le traitement POST)
+$pageTitle = 'Utilisateurs';
+require_once __DIR__ . '/../includes/header.php';
 ?>
 
 <!-- Modal Ajouter/Modifier -->

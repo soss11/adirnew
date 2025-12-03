@@ -3,8 +3,9 @@
  * Mini CRM - Gestion des bénévoles
  */
 
-$pageTitle = 'Bénévoles';
-require_once __DIR__ . '/../includes/header.php';
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/functions.php';
 
 requireLogin();
 requireRole('gestionnaire');
@@ -33,7 +34,7 @@ $statutLabels = [
     'present' => ['label' => 'Présent', 'color' => '#2196f3']
 ];
 
-// Actions POST
+// Actions POST - Traiter AVANT d'inclure le header
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($action === 'assign') {
@@ -63,7 +64,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        redirect('benevoles.php?action=event&id=' . $evenement_id);
+        header('Location: benevoles.php?action=event&id=' . $evenement_id);
+        exit;
     }
 
     if ($action === 'update_status') {
@@ -74,7 +76,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([$statut, $benevole_id]);
 
         setFlashMessage('success', 'Statut mis à jour.');
-        redirect($_SERVER['HTTP_REFERER'] ?? 'benevoles.php');
+        header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? 'benevoles.php'));
+        exit;
     }
 
     if ($action === 'delete') {
@@ -84,7 +87,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([$benevole_id]);
 
         setFlashMessage('success', 'Affectation supprimée.');
-        redirect($_SERVER['HTTP_REFERER'] ?? 'benevoles.php');
+        header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? 'benevoles.php'));
+        exit;
     }
 
     if ($action === 'toggle_benevole') {
@@ -96,9 +100,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([$est_benevole, $competences, $user_id]);
 
         setFlashMessage('success', 'Informations bénévole mises à jour.');
-        redirect('benevoles.php');
+        header('Location: benevoles.php');
+        exit;
     }
 }
+
+// Maintenant inclure le header (après tout le traitement POST)
+$pageTitle = 'Bénévoles';
+require_once __DIR__ . '/../includes/header.php';
 
 // ========================================
 // VUE : LISTE DES BÉNÉVOLES
@@ -259,7 +268,8 @@ $event = $stmt->fetch();
 
 if (!$event) {
     setFlashMessage('error', 'Événement non trouvé.');
-    redirect('benevoles.php');
+    echo '<script>window.location.href = "benevoles.php";</script>';
+    exit;
 }
 
 // Bénévoles assignés

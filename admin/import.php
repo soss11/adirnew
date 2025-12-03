@@ -3,8 +3,9 @@
  * Mini CRM - Import de membres CSV/Excel
  */
 
-$pageTitle = 'Import CSV';
-require_once __DIR__ . '/../includes/header.php';
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/functions.php';
 
 requireLogin();
 requireRole('admin');
@@ -175,6 +176,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file'])) {
         }
     }
 }
+
+// Maintenant inclure le header (après tout le traitement POST)
+$pageTitle = 'Import CSV';
+require_once __DIR__ . '/../includes/header.php';
 ?>
 
 <style>

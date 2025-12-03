@@ -3,8 +3,9 @@
  * Mini CRM - Paramètres de l'association
  */
 
-$pageTitle = 'Paramètres';
-require_once __DIR__ . '/../includes/header.php';
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/functions.php';
 
 requireRole('admin');
 
@@ -69,6 +70,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Rafraîchir les données
 $asso = getAssociationSettings();
+
+// Maintenant inclure le header (après tout le traitement POST)
+$pageTitle = 'Paramètres';
+require_once __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="card">
