@@ -262,6 +262,29 @@ $dateFormatee = ucfirst($joursFr[(int)$dateDebut->format('w')]) . ' ' .
             color: <?php echo $type['color']; ?>;
         }
 
+        /* Affiche de l'événement */
+        .event-poster {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+        }
+
+        .event-poster-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .event-poster-container::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.3));
+            pointer-events: none;
+        }
+
         /* Boutons de partage */
         .share-section {
             border-top: 1px solid #eee;
@@ -398,6 +421,12 @@ $dateFormatee = ucfirst($joursFr[(int)$dateDebut->format('w')]) . ' ' .
             <h1 class="event-title"><?php echo e($event['titre']); ?></h1>
             <p class="event-asso"><?php echo e($asso['nom'] ?? ''); ?></p>
         </div>
+
+        <?php if ($event['affiche']): ?>
+        <div class="event-poster-container">
+            <img src="assets/uploads/<?php echo e($event['affiche']); ?>" alt="<?php echo e($event['titre']); ?>" class="event-poster">
+        </div>
+        <?php endif; ?>
 
         <div class="event-body">
             <div class="event-info">
