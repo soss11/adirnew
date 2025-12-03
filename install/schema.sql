@@ -382,3 +382,189 @@ INSERT INTO settings (setting_key, setting_value) VALUES
     ('fidelite_points_parrainage', '150'),
     ('fidelite_points_anniversaire', '50')
 ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value);
+
+-- ===========================================
+-- FONCTIONNALITÉS AVANCÉES V2
+-- ===========================================
+
+-- Plans de salle pour événements
+CREATE TABLE IF NOT EXISTS event_plans_salle (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    evenement_id INT NOT NULL,
+    nom VARCHAR(100) NOT NULL,
+    nb_rangees INT NOT NULL DEFAULT 10,
+    places_par_rangee INT NOT NULL DEFAULT 20,
+    config JSON,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (evenement_id) REFERENCES evenements(id) ON DELETE CASCADE,
+    INDEX idx_evenement (evenement_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Places individuelles
+CREATE TABLE IF NOT EXISTS event_places (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    plan_id INT NOT NULL,
+    rangee VARCHAR(5) NOT NULL,
+    numero INT NOT NULL,
+    categorie ENUM('standard', 'vip', 'pmr', 'bloque') DEFAULT 'standard',
+    prix_override DECIMAL(10,2),
+    inscription_id INT,
+    reserve_par INT,
+    reserve_at DATETIME,
+    FOREIGN KEY (plan_id) REFERENCES event_plans_salle(id) ON DELETE CASCADE,
+    FOREIGN KEY (inscription_id) REFERENCES inscriptions(id) ON DELETE SET NULL,
+    FOREIGN KEY (reserve_par) REFERENCES users(id) ON DELETE SET NULL,
+    UNIQUE KEY unique_place (plan_id, rangee, numero),
+    INDEX idx_plan (plan_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Covoiturage
+CREATE TABLE IF NOT EXISTS covoiturage (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    evenement_id INT NOT NULL,
+    user_id INT NOT NULL,
+    type_trajet ENUM('aller', 'retour', 'aller_retour') DEFAULT 'aller_retour',
+    role ENUM('conducteur', 'passager') NOT NULL,
+    places_disponibles INT DEFAULT 0,
+    lieu_depart VARCHAR(255) NOT NULL,
+    heure_depart TIME,
+    lieu_arrivee VARCHAR(255),
+    contribution DECIMAL(10,2) DEFAULT 0,
+    commentaire TEXT,
+    telephone VARCHAR(20),
+    actif TINYINT(1) DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (evenement_id) REFERENCES evenements(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_evenement (evenement_id),
+    INDEX idx_user (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Demandes de covoiturage
+CREATE TABLE IF NOT EXISTS covoiturage_reservations (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    covoiturage_id INT NOT NULL,
+    user_id INT NOT NULL,
+    nb_places INT DEFAULT 1,
+    message TEXT,
+    statut ENUM('en_attente', 'accepte', 'refuse', 'annule') DEFAULT 'en_attente',
+    reponse_at DATETIME,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (covoiturage_id) REFERENCES covoiturage(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_covoiturage (covoiturage_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Sondages et votes
+CREATE TABLE IF NOT EXISTS sondages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titre VARCHAR(255) NOT NULL,
+    description TEXT,
+    type_sondage ENUM('sondage', 'vote', 'election') NOT NULL DEFAULT 'sondage',
+    date_debut DATETIME NOT NULL,
+    date_fin DATETIME NOT NULL,
+    anonyme TINYINT(1) DEFAULT 0,
+    choix_multiple TINYINT(1) DEFAULT 0,
+    nb_choix_max INT DEFAULT 1,
+    visible_resultat ENUM('toujours', 'apres_vote', 'apres_cloture') DEFAULT 'apres_cloture',
+    electeurs ENUM('tous', 'membres', 'admin') DEFAULT 'membres',
+    statut ENUM('brouillon', 'actif', 'cloture') DEFAULT 'brouillon',
+    cree_par INT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (cree_par) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_statut (statut),
+    INDEX idx_dates (date_debut, date_fin)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Options de sondage
+CREATE TABLE IF NOT EXISTS sondage_options (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    sondage_id INT NOT NULL,
+    texte VARCHAR(255) NOT NULL,
+    description TEXT,
+    ordre INT DEFAULT 0,
+    FOREIGN KEY (sondage_id) REFERENCES sondages(id) ON DELETE CASCADE,
+    INDEX idx_sondage (sondage_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Votes des utilisateurs
+CREATE TABLE IF NOT EXISTS sondage_votes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    sondage_id INT NOT NULL,
+    option_id INT NOT NULL,
+    user_id INT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (sondage_id) REFERENCES sondages(id) ON DELETE CASCADE,
+    FOREIGN KEY (option_id) REFERENCES sondage_options(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_sondage (sondage_id),
+    INDEX idx_user (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Configuration des rappels automatiques
+CREATE TABLE IF NOT EXISTS rappels_config (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    type_rappel ENUM('cotisation_expiration', 'cotisation_retard', 'evenement', 'anniversaire', 'bienvenue') NOT NULL,
+    delai_jours INT NOT NULL DEFAULT 7,
+    actif TINYINT(1) DEFAULT 1,
+    sujet VARCHAR(255),
+    template TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_type (type_rappel)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Logs des rappels envoyés
+CREATE TABLE IF NOT EXISTS rappels_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    type_rappel VARCHAR(50) NOT NULL,
+    user_id INT NOT NULL,
+    reference_type VARCHAR(50),
+    reference_id INT,
+    envoye_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    statut ENUM('envoye', 'erreur') DEFAULT 'envoye',
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_type (type_rappel),
+    INDEX idx_user (user_id),
+    INDEX idx_date (envoye_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Clés API pour REST
+CREATE TABLE IF NOT EXISTS api_keys (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    nom VARCHAR(100) NOT NULL,
+    api_key VARCHAR(64) NOT NULL UNIQUE,
+    permissions JSON,
+    derniere_utilisation DATETIME,
+    nb_requetes INT DEFAULT 0,
+    actif TINYINT(1) DEFAULT 1,
+    expire_at DATETIME,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_key (api_key),
+    INDEX idx_user (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Logs API
+CREATE TABLE IF NOT EXISTS api_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    api_key_id INT,
+    endpoint VARCHAR(255),
+    method VARCHAR(10),
+    ip_address VARCHAR(45),
+    response_code INT,
+    execution_time FLOAT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (api_key_id) REFERENCES api_keys(id) ON DELETE SET NULL,
+    INDEX idx_key (api_key_id),
+    INDEX idx_date (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Configuration par défaut des rappels
+INSERT INTO rappels_config (type_rappel, delai_jours, actif, sujet, template) VALUES
+    ('cotisation_expiration', 30, 1, 'Votre cotisation expire bientôt', 'Bonjour {prenom},\n\nVotre cotisation expire le {date_fin}. Pensez à la renouveler !\n\nCordialement,\n{asso_nom}'),
+    ('cotisation_retard', 7, 1, 'Cotisation en retard', 'Bonjour {prenom},\n\nVotre cotisation a expiré depuis le {date_fin}. Merci de la renouveler.\n\nCordialement,\n{asso_nom}'),
+    ('evenement', 2, 1, 'Rappel : {event_titre}', 'Bonjour {prenom},\n\nN''oubliez pas l''événement "{event_titre}" qui aura lieu le {event_date} à {event_lieu}.\n\nÀ bientôt !'),
+    ('anniversaire', 0, 1, 'Joyeux anniversaire !', 'Cher(e) {prenom},\n\nToute l''équipe de {asso_nom} vous souhaite un très joyeux anniversaire !\n\nBelle journée !'),
+    ('bienvenue', 0, 1, 'Bienvenue chez {asso_nom}', 'Bonjour {prenom},\n\nBienvenue parmi nous ! Votre numéro de membre est : {numero_membre}.\n\nCordialement,\n{asso_nom}')
+ON DUPLICATE KEY UPDATE type_rappel = type_rappel;

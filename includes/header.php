@@ -96,6 +96,21 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
                         Feedbacks
                     </a>
 
+                    <a href="<?php echo getBaseUrl(); ?>/admin/plan-salle.php" class="nav-item <?php echo $currentPage === 'plan-salle' ? 'active' : ''; ?>">
+                        <span class="nav-icon">&#127915;</span>
+                        Plans de salle
+                    </a>
+
+                    <a href="<?php echo getBaseUrl(); ?>/admin/covoiturage.php" class="nav-item <?php echo $currentPage === 'covoiturage' ? 'active' : ''; ?>">
+                        <span class="nav-icon">&#128663;</span>
+                        Covoiturage
+                    </a>
+
+                    <a href="<?php echo getBaseUrl(); ?>/admin/sondages.php" class="nav-item <?php echo $currentPage === 'sondages' ? 'active' : ''; ?>">
+                        <span class="nav-icon">&#128499;</span>
+                        Sondages / Votes
+                    </a>
+
                     <div class="nav-separator"></div>
                     <div class="nav-section-title">Membres avancés</div>
 
@@ -115,6 +130,11 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
                     <a href="<?php echo getBaseUrl(); ?>/admin/emails.php" class="nav-item <?php echo $currentPage === 'emails' ? 'active' : ''; ?>">
                         <span class="nav-icon">&#128231;</span>
                         Emails / Newsletter
+                    </a>
+
+                    <a href="<?php echo getBaseUrl(); ?>/admin/rappels.php" class="nav-item <?php echo $currentPage === 'rappels' ? 'active' : ''; ?>">
+                        <span class="nav-icon">&#128276;</span>
+                        Rappels automatiques
                     </a>
 
                     <div class="nav-separator"></div>
@@ -153,6 +173,11 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
                     <a href="<?php echo getBaseUrl(); ?>/admin/import.php" class="nav-item <?php echo $currentPage === 'import' ? 'active' : ''; ?>">
                         <span class="nav-icon">&#128229;</span>
                         Import CSV
+                    </a>
+
+                    <a href="<?php echo getBaseUrl(); ?>/admin/api.php" class="nav-item <?php echo $currentPage === 'api' ? 'active' : ''; ?>">
+                        <span class="nav-icon">&#128268;</span>
+                        API REST
                     </a>
                 <?php endif; ?>
 
