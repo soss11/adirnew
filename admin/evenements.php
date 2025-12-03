@@ -241,6 +241,9 @@ function getStatutBadge($statut) {
         <h3><?php echo e($viewEvent['titre']); ?></h3>
         <div class="btn-group">
             <a href="?action=edit&id=<?php echo $viewEvent['id']; ?>" class="btn btn-sm btn-primary">Modifier</a>
+            <?php if ($viewEvent['statut'] === 'publie' || $viewEvent['statut'] === 'complet'): ?>
+            <a href="<?php echo getBaseUrl(); ?>/evenement.php?id=<?php echo $viewEvent['id']; ?>" class="btn btn-sm btn-success" target="_blank" title="Partager">Partager</a>
+            <?php endif; ?>
             <a href="evenements.php" class="btn btn-sm btn-secondary">Retour</a>
         </div>
     </div>
@@ -648,6 +651,9 @@ function fillMemberInfo() {
                                 <div class="btn-group">
                                     <a href="?action=view&id=<?php echo $event['id']; ?>" class="btn btn-sm btn-primary">Voir</a>
                                     <a href="?action=edit&id=<?php echo $event['id']; ?>" class="btn btn-sm btn-secondary">Modifier</a>
+                                    <?php if ($event['statut'] === 'publie' || $event['statut'] === 'complet'): ?>
+                                    <a href="<?php echo getBaseUrl(); ?>/evenement.php?id=<?php echo $event['id']; ?>" class="btn btn-sm btn-success" target="_blank" title="Partager">&#128279;</a>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                             <div style="color:#666;font-size:14px;">
