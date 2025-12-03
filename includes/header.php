@@ -111,6 +111,16 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
                         Sondages / Votes
                     </a>
 
+                    <a href="<?php echo getBaseUrl(); ?>/admin/reunions.php" class="nav-item <?php echo $currentPage === 'reunions' ? 'active' : ''; ?>">
+                        <span class="nav-icon">&#128221;</span>
+                        Réunions / PV
+                    </a>
+
+                    <a href="<?php echo getBaseUrl(); ?>/admin/inventaire.php" class="nav-item <?php echo $currentPage === 'inventaire' ? 'active' : ''; ?>">
+                        <span class="nav-icon">&#128230;</span>
+                        Inventaire
+                    </a>
+
                     <div class="nav-separator"></div>
                     <div class="nav-section-title">Membres avancés</div>
 
@@ -135,6 +145,11 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
                     <a href="<?php echo getBaseUrl(); ?>/admin/rappels.php" class="nav-item <?php echo $currentPage === 'rappels' ? 'active' : ''; ?>">
                         <span class="nav-icon">&#128276;</span>
                         Rappels automatiques
+                    </a>
+
+                    <a href="<?php echo getBaseUrl(); ?>/admin/social.php" class="nav-item <?php echo $currentPage === 'social' ? 'active' : ''; ?>">
+                        <span class="nav-icon">&#128240;</span>
+                        Réseaux sociaux
                     </a>
 
                     <div class="nav-separator"></div>
