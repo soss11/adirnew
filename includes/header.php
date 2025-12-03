@@ -86,6 +86,29 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
                         Check-in
                     </a>
 
+                    <a href="<?php echo getBaseUrl(); ?>/admin/galerie.php" class="nav-item <?php echo $currentPage === 'galerie' ? 'active' : ''; ?>">
+                        <span class="nav-icon">&#128247;</span>
+                        Galerie photos
+                    </a>
+
+                    <a href="<?php echo getBaseUrl(); ?>/admin/feedback.php" class="nav-item <?php echo $currentPage === 'feedback' ? 'active' : ''; ?>">
+                        <span class="nav-icon">&#128172;</span>
+                        Feedbacks
+                    </a>
+
+                    <div class="nav-separator"></div>
+                    <div class="nav-section-title">Membres avancés</div>
+
+                    <a href="<?php echo getBaseUrl(); ?>/admin/familles.php" class="nav-item <?php echo $currentPage === 'familles' ? 'active' : ''; ?>">
+                        <span class="nav-icon">&#128106;</span>
+                        Familles
+                    </a>
+
+                    <a href="<?php echo getBaseUrl(); ?>/admin/fidelite.php" class="nav-item <?php echo $currentPage === 'fidelite' ? 'active' : ''; ?>">
+                        <span class="nav-icon">&#127942;</span>
+                        Fidélité
+                    </a>
+
                     <div class="nav-separator"></div>
                     <div class="nav-section-title">Communication</div>
 
@@ -134,6 +157,11 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
                 <?php endif; ?>
 
                 <div class="nav-separator"></div>
+
+                <a href="<?php echo getBaseUrl(); ?>/annuaire.php" class="nav-item <?php echo $currentPage === 'annuaire' ? 'active' : ''; ?>">
+                    <span class="nav-icon">&#128218;</span>
+                    Annuaire membres
+                </a>
 
                 <a href="<?php echo getBaseUrl(); ?>/profile.php" class="nav-item <?php echo $currentPage === 'profile' ? 'active' : ''; ?>">
                     <span class="nav-icon">&#9998;</span>

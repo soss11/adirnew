@@ -96,6 +96,10 @@ if (isset($_GET['error'])) {
                 </div>
 
                 <button type="submit" class="btn btn-primary" style="width: 100%;">Se connecter</button>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="mot-de-passe-oublie.php" style="color: var(--primary); text-decoration: none; font-size: 14px;">Mot de passe oublié ?</a>
+                </div>
             </form>
         </div>
     </div>

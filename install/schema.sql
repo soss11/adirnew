@@ -236,3 +236,149 @@ CREATE TABLE IF NOT EXISTS email_logs (
     INDEX idx_email (email_id),
     INDEX idx_statut (statut)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ===========================================
+-- NOUVELLES FONCTIONNALITÉS AVANCÉES
+-- ===========================================
+
+-- Table des familles (comptes famille)
+CREATE TABLE IF NOT EXISTS familles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nom_famille VARCHAR(100) NOT NULL,
+    chef_famille_id INT,
+    adresse TEXT,
+    telephone VARCHAR(20),
+    email VARCHAR(255),
+    notes TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_chef (chef_famille_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Ajout colonne famille_id et points fidélité dans users
+ALTER TABLE users ADD COLUMN IF NOT EXISTS famille_id INT DEFAULT NULL;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS points_fidelite INT DEFAULT 0;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS annuaire_visible TINYINT(1) DEFAULT 1;
+
+-- Table des photos d'événements (galerie)
+CREATE TABLE IF NOT EXISTS event_photos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    evenement_id INT NOT NULL,
+    fichier VARCHAR(255) NOT NULL,
+    legende VARCHAR(255),
+    ordre INT DEFAULT 0,
+    uploaded_by INT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (evenement_id) REFERENCES evenements(id) ON DELETE CASCADE,
+    FOREIGN KEY (uploaded_by) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_evenement (evenement_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Table des événements récurrents
+CREATE TABLE IF NOT EXISTS event_recurrence (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    evenement_parent_id INT NOT NULL,
+    type_recurrence ENUM('quotidien', 'hebdomadaire', 'mensuel', 'annuel') NOT NULL,
+    intervalle INT DEFAULT 1,
+    jours_semaine VARCHAR(20),
+    date_fin_recurrence DATE,
+    nb_occurrences INT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (evenement_parent_id) REFERENCES evenements(id) ON DELETE CASCADE,
+    INDEX idx_parent (evenement_parent_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Ajout colonne récurrence dans evenements
+ALTER TABLE evenements ADD COLUMN IF NOT EXISTS recurrence_id INT DEFAULT NULL;
+ALTER TABLE evenements ADD COLUMN IF NOT EXISTS parent_event_id INT DEFAULT NULL;
+
+-- Table des feedbacks/sondages après événements
+CREATE TABLE IF NOT EXISTS event_feedback (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    evenement_id INT NOT NULL,
+    user_id INT,
+    nom_participant VARCHAR(100),
+    email_participant VARCHAR(255),
+    note_globale INT CHECK (note_globale BETWEEN 1 AND 5),
+    note_organisation INT CHECK (note_organisation BETWEEN 1 AND 5),
+    note_lieu INT CHECK (note_lieu BETWEEN 1 AND 5),
+    note_animation INT CHECK (note_animation BETWEEN 1 AND 5),
+    points_positifs TEXT,
+    points_ameliorer TEXT,
+    suggestions TEXT,
+    recommanderait TINYINT(1),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (evenement_id) REFERENCES evenements(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_evenement (evenement_id),
+    INDEX idx_user (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Table des points fidélité (historique)
+CREATE TABLE IF NOT EXISTS fidelite_transactions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    points INT NOT NULL,
+    type_transaction ENUM('gain', 'utilisation', 'expiration', 'bonus', 'ajustement') NOT NULL,
+    description VARCHAR(255),
+    reference_type ENUM('cotisation', 'evenement', 'benevole', 'parrainage', 'anniversaire', 'manuel') DEFAULT 'manuel',
+    reference_id INT,
+    created_by INT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_user (user_id),
+    INDEX idx_type (type_transaction)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Table des récompenses fidélité
+CREATE TABLE IF NOT EXISTS fidelite_recompenses (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(100) NOT NULL,
+    description TEXT,
+    points_requis INT NOT NULL,
+    type_recompense ENUM('reduction', 'cadeau', 'acces_vip', 'autre') NOT NULL DEFAULT 'autre',
+    valeur_reduction DECIMAL(10,2),
+    stock INT DEFAULT -1,
+    actif TINYINT(1) DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Table des récompenses utilisées
+CREATE TABLE IF NOT EXISTS fidelite_utilisations (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    recompense_id INT NOT NULL,
+    points_utilises INT NOT NULL,
+    statut ENUM('en_attente', 'valide', 'annule') DEFAULT 'en_attente',
+    notes TEXT,
+    valide_par INT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (recompense_id) REFERENCES fidelite_recompenses(id) ON DELETE RESTRICT,
+    FOREIGN KEY (valide_par) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_user (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Table des réinitialisations de mot de passe
+CREATE TABLE IF NOT EXISTS password_resets (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    token VARCHAR(64) NOT NULL UNIQUE,
+    expires_at DATETIME NOT NULL,
+    used TINYINT(1) DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_token (token),
+    INDEX idx_expires (expires_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Configuration des points fidélité
+INSERT INTO settings (setting_key, setting_value) VALUES
+    ('fidelite_actif', '1'),
+    ('fidelite_points_cotisation', '100'),
+    ('fidelite_points_evenement', '50'),
+    ('fidelite_points_benevole', '200'),
+    ('fidelite_points_parrainage', '150'),
+    ('fidelite_points_anniversaire', '50')
+ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value);
