@@ -148,6 +148,9 @@ define('INSTALLED', true);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Installation - Mini CRM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -155,8 +158,8 @@ define('INSTALLED', true);
             box-sizing: border-box;
         }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -165,7 +168,7 @@ define('INSTALLED', true);
         }
         .install-container {
             background: white;
-            border-radius: 10px;
+            border-radius: 12px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.2);
             width: 100%;
             max-width: 600px;
@@ -176,7 +179,7 @@ define('INSTALLED', true);
             margin-bottom: 30px;
         }
         .logo h1 {
-            color: #667eea;
+            color: #1565c0;
             font-size: 28px;
         }
         .logo p {
@@ -202,11 +205,11 @@ define('INSTALLED', true);
             position: relative;
         }
         .step-item.active {
-            background: #667eea;
+            background: #1565c0;
             color: white;
         }
         .step-item.done {
-            background: #4caf50;
+            background: #2e7d32;
             color: white;
         }
         .step-item:not(:last-child)::after {
@@ -219,10 +222,10 @@ define('INSTALLED', true);
             background: #e0e0e0;
         }
         .step-item.done:not(:last-child)::after {
-            background: #4caf50;
+            background: #2e7d32;
         }
         h2 {
-            color: #333;
+            color: #1a1a2e;
             margin-bottom: 20px;
             text-align: center;
         }
@@ -231,21 +234,23 @@ define('INSTALLED', true);
         }
         .form-group label {
             display: block;
-            margin-bottom: 5px;
-            color: #333;
+            margin-bottom: 6px;
+            color: #1a1a2e;
             font-weight: 500;
+            font-size: 13px;
         }
         .form-group input {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 5px;
+            padding: 12px 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
             font-size: 14px;
-            transition: border-color 0.3s;
+            transition: all 0.2s;
         }
         .form-group input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #1565c0;
+            box-shadow: 0 0 0 3px #e3f2fd;
         }
         .form-row {
             display: flex;
@@ -257,27 +262,27 @@ define('INSTALLED', true);
         .btn {
             width: 100%;
             padding: 14px;
-            background: #667eea;
+            background: #1565c0;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: background 0.2s;
         }
         .btn:hover {
-            background: #5a6fd6;
+            background: #0d47a1;
         }
         .btn-success {
-            background: #4caf50;
+            background: #2e7d32;
         }
         .btn-success:hover {
-            background: #43a047;
+            background: #1b5e20;
         }
         .alert {
             padding: 15px;
-            border-radius: 5px;
+            border-radius: 8px;
             margin-bottom: 20px;
         }
         .alert-error {
@@ -291,28 +296,40 @@ define('INSTALLED', true);
             border: 1px solid #a5d6a7;
         }
         .section-title {
-            font-size: 14px;
-            color: #667eea;
+            font-size: 12px;
+            color: #1565c0;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
+            font-weight: 600;
             margin: 25px 0 15px;
-            padding-bottom: 5px;
-            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
         }
         .success-icon {
             font-size: 60px;
             text-align: center;
             margin-bottom: 20px;
+            color: #2e7d32;
         }
         .info-box {
-            background: #f5f5f5;
+            background: #f8fafc;
             padding: 15px;
-            border-radius: 5px;
+            border-radius: 8px;
             margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
         }
         .info-box p {
             margin: 5px 0;
-            color: #666;
+            color: #64748b;
+        }
+        @media (max-width: 600px) {
+            .install-container {
+                padding: 24px;
+            }
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
         }
     </style>
 </head>

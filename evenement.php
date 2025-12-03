@@ -90,6 +90,9 @@ $dateFormatee = ucfirst($joursFr[(int)$dateDebut->format('w')]) . ' ' .
     <meta name="twitter:title" content="<?php echo e($shareTitle); ?>">
     <meta name="twitter:description" content="<?php echo e($shareText); ?>">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -98,8 +101,8 @@ $dateFormatee = ucfirst($joursFr[(int)$dateDebut->format('w')]) . ' ' .
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -218,7 +221,7 @@ $dateFormatee = ucfirst($joursFr[(int)$dateDebut->format('w')]) . ' ' .
         .price-box {
             flex: 1;
             min-width: 150px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
             color: #fff;
             padding: 20px;
             border-radius: 12px;
