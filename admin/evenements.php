@@ -3,11 +3,15 @@
  * Mini CRM - Gestion des événements
  */
 
-$pageTitle = 'Événements';
-require_once __DIR__ . '/../includes/header.php';
+// Charger les dépendances SANS afficher de HTML
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/functions.php';
 
+requireLogin();
 requireRole('gestionnaire');
 
+$currentUser = getCurrentUser();
 $error = '';
 $action = $_GET['action'] ?? '';
 $eventId = (int)($_GET['id'] ?? 0);
@@ -104,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_event'])) {
             header('Location: evenements.php');
             exit;
         } catch (PDOException $e) {
-            $error = 'Erreur lors de l\'enregistrement.';
+            $error = 'Erreur lors de l\'enregistrement: ' . $e->getMessage();
         }
     }
 }
@@ -146,6 +150,10 @@ if ($action === 'update_inscription' && isset($_GET['insc_id'])) {
     header("Location: evenements.php?action=view&id=$eventIdRedir");
     exit;
 }
+
+// MAINTENANT on peut inclure le header (après les redirections)
+$pageTitle = 'Événements';
+require_once __DIR__ . '/../includes/header.php';
 
 // Récupérer l'événement à éditer
 $editEvent = null;
