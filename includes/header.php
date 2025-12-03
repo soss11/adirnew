@@ -42,13 +42,34 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
                 </a>
 
                 <?php if (isGestionnaire()): ?>
-                    <a href="<?php echo getBaseUrl(); ?>/admin/users.php" class="nav-item <?php echo $currentPage === 'users' ? 'active' : ''; ?>">
+                    <div class="nav-separator"></div>
+                    <div class="nav-section-title">Gestion</div>
+
+                    <a href="<?php echo getBaseUrl(); ?>/admin/membres.php" class="nav-item <?php echo $currentPage === 'membres' ? 'active' : ''; ?>">
                         <span class="nav-icon">&#9787;</span>
-                        Utilisateurs
+                        Membres
+                    </a>
+
+                    <a href="<?php echo getBaseUrl(); ?>/admin/evenements.php" class="nav-item <?php echo $currentPage === 'evenements' ? 'active' : ''; ?>">
+                        <span class="nav-icon">&#9734;</span>
+                        Événements
+                    </a>
+
+                    <a href="<?php echo getBaseUrl(); ?>/admin/cotisations.php" class="nav-item <?php echo $currentPage === 'cotisations' ? 'active' : ''; ?>">
+                        <span class="nav-icon">&#8364;</span>
+                        Cotisations
                     </a>
                 <?php endif; ?>
 
                 <?php if (isAdmin()): ?>
+                    <div class="nav-separator"></div>
+                    <div class="nav-section-title">Administration</div>
+
+                    <a href="<?php echo getBaseUrl(); ?>/admin/users.php" class="nav-item <?php echo $currentPage === 'users' ? 'active' : ''; ?>">
+                        <span class="nav-icon">&#9881;</span>
+                        Utilisateurs
+                    </a>
+
                     <a href="<?php echo getBaseUrl(); ?>/admin/settings.php" class="nav-item <?php echo $currentPage === 'settings' ? 'active' : ''; ?>">
                         <span class="nav-icon">&#9881;</span>
                         Paramètres

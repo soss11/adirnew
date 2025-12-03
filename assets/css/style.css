@@ -127,6 +127,15 @@ body {
     margin: 15px 25px;
 }
 
+.nav-section-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.5);
+    padding: 5px 25px 10px;
+    font-weight: 600;
+}
+
 .nav-logout {
     color: rgba(255,255,255,0.6);
 }

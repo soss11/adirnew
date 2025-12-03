@@ -68,6 +68,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $asso_tel = trim($_POST['asso_tel'] ?? '');
         $asso_email = trim($_POST['asso_email'] ?? '');
 
+        $load_demo = isset($_POST['load_demo']) && $_POST['load_demo'] === '1';
+
         if (empty($admin_email) || empty($admin_pass) || empty($admin_nom)) {
             $error = "Veuillez remplir tous les champs obligatoires.";
         } elseif ($admin_pass !== $admin_pass2) {
@@ -101,6 +103,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 foreach ($settings as $key => $value) {
                     $stmt = $pdo->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = ?");
                     $stmt->execute([$key, $value, $value]);
+                }
+
+                // Charger les données de démo si demandé
+                if ($load_demo && file_exists('demo_data.sql')) {
+                    $demo_sql = file_get_contents('demo_data.sql');
+                    $pdo->exec($demo_sql);
                 }
 
                 // Créer le fichier de configuration
@@ -414,6 +422,15 @@ define('INSTALLED', true);
                         <label>Email</label>
                         <input type="email" name="asso_email">
                     </div>
+                </div>
+
+                <div class="section-title">Options</div>
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" name="load_demo" value="1" style="width: auto; margin-right: 10px;" checked>
+                        Charger les données de démonstration (membres, événements, cotisations)
+                    </label>
+                    <p style="font-size: 12px; color: #666; margin-top: 5px;">Recommandé pour tester l'application. Mot de passe des comptes démo : <strong>demo123</strong></p>
                 </div>
 
                 <button type="submit" class="btn">Terminer l'installation</button>
