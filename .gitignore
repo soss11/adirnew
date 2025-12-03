@@ -1,0 +1,19 @@
+# Configuration (contains database credentials)
+config/config.php
+
+# Uploaded files
+assets/uploads/*
+!assets/uploads/.gitkeep
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

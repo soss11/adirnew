@@ -1,0 +1,27 @@
+# Mini CRM - Apache Configuration
+
+# Prevent directory listing
+Options -Indexes
+
+# Protect sensitive files
+<FilesMatch "\.(sql|log|md)$">
+    Order deny,allow
+    Deny from all
+</FilesMatch>
+
+# PHP settings (if allowed)
+<IfModule mod_php.c>
+    php_value upload_max_filesize 10M
+    php_value post_max_size 10M
+</IfModule>
+
+# URL Rewriting (future use)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Redirect to install if not installed
+    RewriteCond %{REQUEST_URI} !^/install
+    RewriteCond %{DOCUMENT_ROOT}/config/config.php !-f
+    RewriteRule ^(.*)$ install/index.php [L,R=302]
+</IfModule>

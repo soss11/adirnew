@@ -1,0 +1,11 @@
+# Deny access to config files
+<Files "*">
+    Order deny,allow
+    Deny from all
+</Files>
+
+# Allow PHP to include files
+<Files "*.php">
+    Order allow,deny
+    Allow from all
+</Files>
