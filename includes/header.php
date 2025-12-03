@@ -80,6 +80,32 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
                         <span class="nav-icon">&#9996;</span>
                         Bénévoles
                     </a>
+
+                    <a href="<?php echo getBaseUrl(); ?>/admin/checkin.php" class="nav-item <?php echo $currentPage === 'checkin' ? 'active' : ''; ?>">
+                        <span class="nav-icon">&#128244;</span>
+                        Check-in
+                    </a>
+
+                    <div class="nav-separator"></div>
+                    <div class="nav-section-title">Communication</div>
+
+                    <a href="<?php echo getBaseUrl(); ?>/admin/emails.php" class="nav-item <?php echo $currentPage === 'emails' ? 'active' : ''; ?>">
+                        <span class="nav-icon">&#128231;</span>
+                        Emails / Newsletter
+                    </a>
+
+                    <div class="nav-separator"></div>
+                    <div class="nav-section-title">Finances</div>
+
+                    <a href="<?php echo getBaseUrl(); ?>/admin/depenses.php" class="nav-item <?php echo $currentPage === 'depenses' ? 'active' : ''; ?>">
+                        <span class="nav-icon">&#128176;</span>
+                        Dépenses
+                    </a>
+
+                    <a href="<?php echo getBaseUrl(); ?>/admin/rapport-financier.php" class="nav-item <?php echo $currentPage === 'rapport-financier' ? 'active' : ''; ?>">
+                        <span class="nav-icon">&#128202;</span>
+                        Rapport financier
+                    </a>
                 <?php endif; ?>
 
                 <?php if (isAdmin()): ?>

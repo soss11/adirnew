@@ -68,9 +68,14 @@ $evenements = $stmt->fetchAll();
 
 <!-- Bienvenue -->
 <div class="card">
-    <div class="card-body">
-        <h2 style="margin-bottom:10px;">Bienvenue, <?php echo e($currentUser['prenom'] ?: $currentUser['nom']); ?> !</h2>
-        <p style="color:#666;">Voici votre espace personnel.</p>
+    <div class="card-body" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;">
+        <div>
+            <h2 style="margin-bottom:10px;">Bienvenue, <?php echo e($currentUser['prenom'] ?: $currentUser['nom']); ?> !</h2>
+            <p style="color:#666;">Voici votre espace personnel.</p>
+        </div>
+        <div class="btn-group">
+            <a href="admin/carte-membre.php" class="btn btn-primary">Ma carte membre</a>
+        </div>
     </div>
 </div>
 
@@ -152,11 +157,16 @@ $evenements = $stmt->fetchAll();
                             <?php if ($insc['lieu']): ?> • <?php echo e($insc['lieu']); ?><?php endif; ?>
                         </div>
                     </div>
-                    <div>
+                    <div style="display:flex;gap:8px;align-items:center;">
                         <?php if ($insc['statut'] === 'confirme'): ?>
                             <span class="badge badge-success">Confirmé</span>
+                            <?php if (!empty($insc['ticket_code'])): ?>
+                                <a href="billet.php?code=<?php echo urlencode($insc['ticket_code']); ?>" class="btn btn-sm btn-primary">Mon billet</a>
+                            <?php endif; ?>
                         <?php elseif ($insc['statut'] === 'en_attente'): ?>
                             <span class="badge" style="background:rgba(255,152,0,0.15);color:#e65100;">En attente</span>
+                        <?php elseif ($insc['statut'] === 'liste_attente'): ?>
+                            <span class="badge" style="background:rgba(99,102,241,0.15);color:#6366f1;">Liste d'attente</span>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -268,6 +278,16 @@ $cotisations_renouveler = $stmt->fetchAll();
 // Nouveaux membres (30 derniers jours)
 $stmt = $pdo->query("SELECT * FROM users WHERE role = 'membre' AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY) ORDER BY created_at DESC LIMIT 5");
 $nouveaux_membres = $stmt->fetchAll();
+
+// Anniversaires à venir (7 prochains jours)
+$stmt = $pdo->query("SELECT * FROM users
+    WHERE role = 'membre' AND actif = 1 AND date_naissance IS NOT NULL
+    AND (
+        (MONTH(date_naissance) = MONTH(CURDATE()) AND DAY(date_naissance) >= DAY(CURDATE()))
+        OR (MONTH(date_naissance) = MONTH(DATE_ADD(CURDATE(), INTERVAL 7 DAY)) AND DAY(date_naissance) <= DAY(DATE_ADD(CURDATE(), INTERVAL 7 DAY)))
+    )
+    ORDER BY MONTH(date_naissance), DAY(date_naissance) LIMIT 10");
+$anniversaires = $stmt->fetchAll();
 
 // Statistiques par pays d'origine
 $stmt = $pdo->query("SELECT pays_origine, COUNT(*) as count FROM users WHERE role = 'membre' AND actif = 1 AND pays_origine IS NOT NULL AND pays_origine != '' GROUP BY pays_origine ORDER BY count DESC LIMIT 5");
@@ -392,6 +412,37 @@ $stats_pays = $stmt->fetchAll();
 </div>
 
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin-top:20px;">
+
+    <!-- Anniversaires -->
+    <?php if (!empty($anniversaires)): ?>
+    <div class="card">
+        <div class="card-header">
+            <h3>🎂 Anniversaires à venir</h3>
+        </div>
+        <div class="card-body">
+            <?php foreach ($anniversaires as $anniv):
+                $jourAnniv = date('d/m', strtotime($anniv['date_naissance']));
+                $age = date('Y') - date('Y', strtotime($anniv['date_naissance']));
+                $estAujourdhui = date('m-d') === date('m-d', strtotime($anniv['date_naissance']));
+            ?>
+                <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #eee;">
+                    <div style="width:35px;height:35px;border-radius:50%;background:<?php echo $estAujourdhui ? '#ffd700' : 'var(--primary-bg)'; ?>;display:flex;align-items:center;justify-content:center;font-size:16px;">
+                        <?php echo $estAujourdhui ? '🎉' : '🎂'; ?>
+                    </div>
+                    <div style="flex:1;">
+                        <strong><?php echo e($anniv['prenom'] . ' ' . $anniv['nom']); ?></strong>
+                        <?php if ($estAujourdhui): ?>
+                            <span class="badge badge-warning" style="margin-left:5px;">Aujourd'hui !</span>
+                        <?php endif; ?>
+                        <div style="font-size:12px;color:#666;">
+                            <?php echo $jourAnniv; ?> - <?php echo $age; ?> ans
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <?php endif; ?>
 
     <!-- Nouveaux membres -->
     <div class="card">

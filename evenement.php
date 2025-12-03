@@ -492,12 +492,18 @@ $dateFormatee = ucfirst($joursFr[(int)$dateDebut->format('w')]) . ' ' .
             <?php if ($event['statut'] === 'complet'): ?>
             <div class="event-status complet">
                 <p class="places-info"><strong>Complet !</strong> Cet événement affiche complet.</p>
+                <a href="inscription-evenement.php?id=<?php echo $id; ?>" style="display:inline-block;margin-top:15px;padding:12px 30px;background:#6366f1;color:#fff;border-radius:10px;text-decoration:none;font-weight:600;">S'inscrire sur la liste d'attente</a>
             </div>
             <?php elseif ($event['places_max'] > 0): ?>
             <div class="event-status">
                 <p class="places-info">
                     <strong><?php echo $event['places_max'] - $event['nb_inscrits']; ?></strong> place(s) restante(s)
                 </p>
+                <a href="inscription-evenement.php?id=<?php echo $id; ?>" style="display:inline-block;margin-top:15px;padding:14px 40px;background:linear-gradient(135deg, #1565c0, #0d47a1);color:#fff;border-radius:10px;text-decoration:none;font-weight:600;font-size:16px;">Je m'inscris</a>
+            </div>
+            <?php else: ?>
+            <div class="event-status">
+                <a href="inscription-evenement.php?id=<?php echo $id; ?>" style="display:inline-block;padding:14px 40px;background:linear-gradient(135deg, #1565c0, #0d47a1);color:#fff;border-radius:10px;text-decoration:none;font-weight:600;font-size:16px;">Je m'inscris</a>
             </div>
             <?php endif; ?>
 

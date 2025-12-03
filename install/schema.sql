@@ -3,6 +3,7 @@
 -- Table des utilisateurs (avec champs enrichis pour membres)
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    numero_membre VARCHAR(20) UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     nom VARCHAR(100) NOT NULL,
@@ -18,6 +19,7 @@ CREATE TABLE IF NOT EXISTS users (
     date_arrivee DATE,
     date_naissance DATE,
     photo VARCHAR(255),
+    carte_generee_le DATE,
     profession VARCHAR(100),
     notes TEXT,
     actif TINYINT(1) DEFAULT 1,
@@ -112,6 +114,7 @@ CREATE TABLE IF NOT EXISTS evenements (
 -- Table des inscriptions aux événements
 CREATE TABLE IF NOT EXISTS inscriptions (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    ticket_code VARCHAR(32) UNIQUE,
     evenement_id INT NOT NULL,
     user_id INT,
     nom_participant VARCHAR(100),
@@ -120,16 +123,21 @@ CREATE TABLE IF NOT EXISTS inscriptions (
     telephone_participant VARCHAR(20),
     nombre_places INT DEFAULT 1,
     montant DECIMAL(10,2) DEFAULT 0,
-    statut ENUM('en_attente', 'confirme', 'annule', 'present') DEFAULT 'en_attente',
+    statut ENUM('en_attente', 'confirme', 'annule', 'present', 'liste_attente') DEFAULT 'en_attente',
+    liste_attente TINYINT(1) DEFAULT 0,
+    checkin_at DATETIME,
+    checkin_par INT,
     mode_paiement ENUM('especes', 'cheque', 'carte', 'virement', 'gratuit') DEFAULT 'especes',
     date_paiement DATE,
     notes TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (evenement_id) REFERENCES evenements(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (checkin_par) REFERENCES users(id) ON DELETE SET NULL,
     INDEX idx_evenement (evenement_id),
     INDEX idx_user (user_id),
-    INDEX idx_statut (statut)
+    INDEX idx_statut (statut),
+    INDEX idx_ticket (ticket_code)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table des commentaires/notes sur les membres
@@ -176,4 +184,55 @@ CREATE TABLE IF NOT EXISTS benevoles (
     INDEX idx_user (user_id),
     INDEX idx_evenement (evenement_id),
     UNIQUE KEY unique_benevole_event (user_id, evenement_id, role_benevole)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Table des dépenses/budget
+CREATE TABLE IF NOT EXISTS depenses (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    evenement_id INT,
+    categorie ENUM('location', 'materiel', 'nourriture', 'communication', 'artiste', 'transport', 'autre') NOT NULL DEFAULT 'autre',
+    description VARCHAR(255) NOT NULL,
+    montant DECIMAL(10,2) NOT NULL,
+    date_depense DATE NOT NULL,
+    fournisseur VARCHAR(255),
+    justificatif VARCHAR(255),
+    cree_par INT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (evenement_id) REFERENCES evenements(id) ON DELETE SET NULL,
+    FOREIGN KEY (cree_par) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_evenement (evenement_id),
+    INDEX idx_date (date_depense),
+    INDEX idx_categorie (categorie)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Table des documents membres
+CREATE TABLE IF NOT EXISTS documents (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    type_document ENUM('identite', 'attestation', 'justificatif', 'autre') NOT NULL DEFAULT 'autre',
+    nom_fichier VARCHAR(255) NOT NULL,
+    fichier VARCHAR(255) NOT NULL,
+    date_expiration DATE,
+    notes TEXT,
+    uploaded_by INT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (uploaded_by) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_user (user_id),
+    INDEX idx_type (type_document)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Table log des emails envoyés
+CREATE TABLE IF NOT EXISTS email_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email_id INT,
+    destinataire_email VARCHAR(255) NOT NULL,
+    destinataire_nom VARCHAR(200),
+    statut ENUM('envoye', 'erreur', 'en_attente') DEFAULT 'en_attente',
+    erreur_message TEXT,
+    envoye_at DATETIME,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (email_id) REFERENCES emails(id) ON DELETE CASCADE,
+    INDEX idx_email (email_id),
+    INDEX idx_statut (statut)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
