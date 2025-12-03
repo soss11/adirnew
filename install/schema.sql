@@ -21,6 +21,8 @@ CREATE TABLE IF NOT EXISTS users (
     profession VARCHAR(100),
     notes TEXT,
     actif TINYINT(1) DEFAULT 1,
+    est_benevole TINYINT(1) DEFAULT 0,
+    competences_benevole TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     last_login DATETIME,
@@ -156,4 +158,22 @@ CREATE TABLE IF NOT EXISTS emails (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (evenement_id) REFERENCES evenements(id) ON DELETE SET NULL,
     FOREIGN KEY (envoye_par) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Table des bénévoles pour les événements
+CREATE TABLE IF NOT EXISTS benevoles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    evenement_id INT NOT NULL,
+    role_benevole VARCHAR(100) NOT NULL,
+    horaire_debut TIME,
+    horaire_fin TIME,
+    statut ENUM('propose', 'confirme', 'annule', 'present') DEFAULT 'propose',
+    notes TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (evenement_id) REFERENCES evenements(id) ON DELETE CASCADE,
+    INDEX idx_user (user_id),
+    INDEX idx_evenement (evenement_id),
+    UNIQUE KEY unique_benevole_event (user_id, evenement_id, role_benevole)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

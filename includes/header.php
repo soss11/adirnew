@@ -55,9 +55,19 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
                         Événements
                     </a>
 
+                    <a href="<?php echo getBaseUrl(); ?>/admin/calendrier.php" class="nav-item <?php echo $currentPage === 'calendrier' ? 'active' : ''; ?>">
+                        <span class="nav-icon">&#128197;</span>
+                        Calendrier
+                    </a>
+
                     <a href="<?php echo getBaseUrl(); ?>/admin/cotisations.php" class="nav-item <?php echo $currentPage === 'cotisations' ? 'active' : ''; ?>">
                         <span class="nav-icon">&#8364;</span>
                         Cotisations
+                    </a>
+
+                    <a href="<?php echo getBaseUrl(); ?>/admin/benevoles.php" class="nav-item <?php echo $currentPage === 'benevoles' ? 'active' : ''; ?>">
+                        <span class="nav-icon">&#9996;</span>
+                        Bénévoles
                     </a>
                 <?php endif; ?>
 
@@ -73,6 +83,16 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
                     <a href="<?php echo getBaseUrl(); ?>/admin/settings.php" class="nav-item <?php echo $currentPage === 'settings' ? 'active' : ''; ?>">
                         <span class="nav-icon">&#9881;</span>
                         Paramètres
+                    </a>
+
+                    <a href="<?php echo getBaseUrl(); ?>/admin/statistiques.php" class="nav-item <?php echo $currentPage === 'statistiques' ? 'active' : ''; ?>">
+                        <span class="nav-icon">&#128200;</span>
+                        Statistiques
+                    </a>
+
+                    <a href="<?php echo getBaseUrl(); ?>/admin/import.php" class="nav-item <?php echo $currentPage === 'import' ? 'active' : ''; ?>">
+                        <span class="nav-icon">&#128229;</span>
+                        Import CSV
                     </a>
                 <?php endif; ?>
 

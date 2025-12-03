@@ -110,3 +110,24 @@ CREATE TABLE IF NOT EXISTS emails (
     statut ENUM('brouillon', 'envoye', 'erreur') DEFAULT 'brouillon',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Table des bénévoles pour les événements
+CREATE TABLE IF NOT EXISTS benevoles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    evenement_id INT NOT NULL,
+    role_benevole VARCHAR(100) NOT NULL,
+    horaire_debut TIME,
+    horaire_fin TIME,
+    statut ENUM('propose', 'confirme', 'annule', 'present') DEFAULT 'propose',
+    notes TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_user (user_id),
+    INDEX idx_evenement (evenement_id),
+    UNIQUE KEY unique_benevole_event (user_id, evenement_id, role_benevole)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Ajouter colonne bénévole aux utilisateurs
+ALTER TABLE users
+ADD COLUMN IF NOT EXISTS est_benevole TINYINT(1) DEFAULT 0 AFTER actif,
+ADD COLUMN IF NOT EXISTS competences_benevole TEXT AFTER est_benevole;

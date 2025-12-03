@@ -498,6 +498,9 @@ function updateDateFin() {
                                         <?php if ($cot['statut'] === 'en_attente'): ?>
                                             <a href="?action=payer&id=<?php echo $cot['id']; ?>" class="btn btn-sm btn-success">Marquer payé</a>
                                         <?php endif; ?>
+                                        <?php if ($cot['statut'] === 'paye'): ?>
+                                            <a href="recu-pdf.php?type=cotisation&id=<?php echo $cot['id']; ?>" class="btn btn-sm btn-primary" target="_blank" title="Imprimer le reçu">Reçu PDF</a>
+                                        <?php endif; ?>
                                         <a href="?action=edit&id=<?php echo $cot['id']; ?>" class="btn btn-sm btn-secondary">Modifier</a>
                                         <a href="?action=delete&id=<?php echo $cot['id']; ?>" class="btn btn-sm btn-danger"
                                            onclick="return confirm('Supprimer cette cotisation ?');">Supprimer</a>
