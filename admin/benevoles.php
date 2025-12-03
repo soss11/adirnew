@@ -7,7 +7,7 @@ $pageTitle = 'Bénévoles';
 require_once __DIR__ . '/../includes/header.php';
 
 requireLogin();
-requireRole(['admin', 'gestionnaire']);
+requireRole('gestionnaire');
 
 $action = $_GET['action'] ?? 'list';
 $id = (int)($_GET['id'] ?? 0);

@@ -7,7 +7,7 @@ $pageTitle = 'Calendrier';
 require_once __DIR__ . '/../includes/header.php';
 
 requireLogin();
-requireRole(['admin', 'gestionnaire']);
+requireRole('gestionnaire');
 
 $eventTypes = [
     'spectacle' => ['label' => 'Spectacle', 'color' => '#e91e63'],

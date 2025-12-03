@@ -7,7 +7,7 @@ $pageTitle = 'Import CSV';
 require_once __DIR__ . '/../includes/header.php';
 
 requireLogin();
-requireRole(['admin']);
+requireRole('admin');
 
 $message = '';
 $errors = [];

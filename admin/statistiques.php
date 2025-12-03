@@ -7,7 +7,7 @@ $pageTitle = 'Statistiques';
 require_once __DIR__ . '/../includes/header.php';
 
 requireLogin();
-requireRole(['admin']);
+requireRole('admin');
 
 // Année sélectionnée
 $annee = isset($_GET['annee']) ? (int)$_GET['annee'] : (int)date('Y');

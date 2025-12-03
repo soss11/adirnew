@@ -9,7 +9,7 @@ require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/functions.php';
 
 requireLogin();
-requireRole(['admin', 'gestionnaire']);
+requireRole('gestionnaire');
 
 $type = $_GET['type'] ?? 'cotisation'; // cotisation ou attestation
 $id = (int)($_GET['id'] ?? 0);
