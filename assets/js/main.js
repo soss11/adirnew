@@ -2,6 +2,12 @@
  * Mini CRM - JavaScript principal
  */
 
+// Toggle navigation group (accordion menu)
+function toggleNavGroup(header) {
+    const group = header.parentElement;
+    group.classList.toggle('open');
+}
+
 document.addEventListener('DOMContentLoaded', function() {
 
     // Mobile Menu Toggle

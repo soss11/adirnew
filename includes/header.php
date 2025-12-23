@@ -13,6 +13,25 @@ $flash = getFlashMessage();
 
 // Déterminer la page active
 $currentPage = basename($_SERVER['PHP_SELF'], '.php');
+
+// Groupes de pages pour l'accordéon
+$menuGroups = [
+    'gestion' => ['membres', 'evenements', 'calendrier', 'cotisations'],
+    'outils' => ['checkin', 'benevoles', 'reunions', 'inventaire', 'sondages'],
+    'communication' => ['emails', 'rappels', 'social'],
+    'finances' => ['depenses', 'rapport-financier'],
+    'plus' => ['galerie', 'familles', 'fidelite', 'covoiturage', 'feedback', 'plan-salle'],
+    'admin' => ['users', 'settings', 'statistiques', 'import', 'api']
+];
+
+// Trouver quel groupe est actif
+$activeGroup = '';
+foreach ($menuGroups as $group => $pages) {
+    if (in_array($currentPage, $pages)) {
+        $activeGroup = $group;
+        break;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -48,137 +67,118 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
 
             <nav class="sidebar-nav">
                 <a href="<?php echo getBaseUrl(); ?>/dashboard.php" class="nav-item <?php echo $currentPage === 'dashboard' ? 'active' : ''; ?>">
-                    <span class="nav-icon">&#127968;</span>
+                    <span class="nav-icon">🏠</span>
                     Tableau de bord
                 </a>
 
                 <?php if (isGestionnaire()): ?>
-                    <div class="nav-section-title">Gestion</div>
-                    <a href="<?php echo getBaseUrl(); ?>/admin/membres.php" class="nav-item <?php echo $currentPage === 'membres' ? 'active' : ''; ?>">
-                        <span class="nav-icon">&#128101;</span>
-                        Membres
-                    </a>
-                    <a href="<?php echo getBaseUrl(); ?>/admin/evenements.php" class="nav-item <?php echo $currentPage === 'evenements' || $currentPage === 'calendrier' ? 'active' : ''; ?>">
-                        <span class="nav-icon">&#128197;</span>
-                        Événements
-                    </a>
-                    <a href="<?php echo getBaseUrl(); ?>/admin/cotisations.php" class="nav-item <?php echo $currentPage === 'cotisations' ? 'active' : ''; ?>">
-                        <span class="nav-icon">&#128179;</span>
-                        Cotisations
-                    </a>
+                    <!-- GESTION -->
+                    <div class="nav-group <?php echo $activeGroup === 'gestion' ? 'open' : ''; ?>">
+                        <div class="nav-group-header" onclick="toggleNavGroup(this)">
+                            <span class="nav-icon">👥</span>
+                            <span class="nav-group-title">Gestion</span>
+                            <span class="nav-arrow">›</span>
+                        </div>
+                        <div class="nav-group-items">
+                            <a href="<?php echo getBaseUrl(); ?>/admin/membres.php" class="nav-item <?php echo $currentPage === 'membres' ? 'active' : ''; ?>">Membres</a>
+                            <a href="<?php echo getBaseUrl(); ?>/admin/evenements.php" class="nav-item <?php echo $currentPage === 'evenements' || $currentPage === 'calendrier' ? 'active' : ''; ?>">Événements</a>
+                            <a href="<?php echo getBaseUrl(); ?>/admin/cotisations.php" class="nav-item <?php echo $currentPage === 'cotisations' ? 'active' : ''; ?>">Cotisations</a>
+                        </div>
+                    </div>
 
-                    <div class="nav-section-title">Outils</div>
-                    <a href="<?php echo getBaseUrl(); ?>/admin/checkin.php" class="nav-item <?php echo $currentPage === 'checkin' ? 'active' : ''; ?>">
-                        <span class="nav-icon">&#9989;</span>
-                        Check-in
-                    </a>
-                    <a href="<?php echo getBaseUrl(); ?>/admin/benevoles.php" class="nav-item <?php echo $currentPage === 'benevoles' ? 'active' : ''; ?>">
-                        <span class="nav-icon">&#128588;</span>
-                        Bénévoles
-                    </a>
-                    <a href="<?php echo getBaseUrl(); ?>/admin/reunions.php" class="nav-item <?php echo $currentPage === 'reunions' ? 'active' : ''; ?>">
-                        <span class="nav-icon">&#128203;</span>
-                        Réunions
-                    </a>
-                    <a href="<?php echo getBaseUrl(); ?>/admin/inventaire.php" class="nav-item <?php echo $currentPage === 'inventaire' ? 'active' : ''; ?>">
-                        <span class="nav-icon">&#128230;</span>
-                        Inventaire
-                    </a>
-                    <a href="<?php echo getBaseUrl(); ?>/admin/sondages.php" class="nav-item <?php echo $currentPage === 'sondages' ? 'active' : ''; ?>">
-                        <span class="nav-icon">&#128202;</span>
-                        Sondages
-                    </a>
+                    <!-- OUTILS -->
+                    <div class="nav-group <?php echo $activeGroup === 'outils' ? 'open' : ''; ?>">
+                        <div class="nav-group-header" onclick="toggleNavGroup(this)">
+                            <span class="nav-icon">🛠️</span>
+                            <span class="nav-group-title">Outils</span>
+                            <span class="nav-arrow">›</span>
+                        </div>
+                        <div class="nav-group-items">
+                            <a href="<?php echo getBaseUrl(); ?>/admin/checkin.php" class="nav-item <?php echo $currentPage === 'checkin' ? 'active' : ''; ?>">Check-in</a>
+                            <a href="<?php echo getBaseUrl(); ?>/admin/benevoles.php" class="nav-item <?php echo $currentPage === 'benevoles' ? 'active' : ''; ?>">Bénévoles</a>
+                            <a href="<?php echo getBaseUrl(); ?>/admin/reunions.php" class="nav-item <?php echo $currentPage === 'reunions' ? 'active' : ''; ?>">Réunions</a>
+                            <a href="<?php echo getBaseUrl(); ?>/admin/inventaire.php" class="nav-item <?php echo $currentPage === 'inventaire' ? 'active' : ''; ?>">Inventaire</a>
+                            <a href="<?php echo getBaseUrl(); ?>/admin/sondages.php" class="nav-item <?php echo $currentPage === 'sondages' ? 'active' : ''; ?>">Sondages</a>
+                        </div>
+                    </div>
 
-                    <div class="nav-section-title">Communication</div>
-                    <a href="<?php echo getBaseUrl(); ?>/admin/emails.php" class="nav-item <?php echo $currentPage === 'emails' ? 'active' : ''; ?>">
-                        <span class="nav-icon">&#128231;</span>
-                        Emails
-                    </a>
-                    <a href="<?php echo getBaseUrl(); ?>/admin/rappels.php" class="nav-item <?php echo $currentPage === 'rappels' ? 'active' : ''; ?>">
-                        <span class="nav-icon">&#128276;</span>
-                        Rappels
-                    </a>
+                    <!-- COMMUNICATION -->
+                    <div class="nav-group <?php echo $activeGroup === 'communication' ? 'open' : ''; ?>">
+                        <div class="nav-group-header" onclick="toggleNavGroup(this)">
+                            <span class="nav-icon">📧</span>
+                            <span class="nav-group-title">Communication</span>
+                            <span class="nav-arrow">›</span>
+                        </div>
+                        <div class="nav-group-items">
+                            <a href="<?php echo getBaseUrl(); ?>/admin/emails.php" class="nav-item <?php echo $currentPage === 'emails' ? 'active' : ''; ?>">Emails</a>
+                            <a href="<?php echo getBaseUrl(); ?>/admin/rappels.php" class="nav-item <?php echo $currentPage === 'rappels' ? 'active' : ''; ?>">Rappels</a>
+                            <a href="<?php echo getBaseUrl(); ?>/admin/social.php" class="nav-item <?php echo $currentPage === 'social' ? 'active' : ''; ?>">Réseaux sociaux</a>
+                        </div>
+                    </div>
 
-                    <div class="nav-section-title">Finances</div>
-                    <a href="<?php echo getBaseUrl(); ?>/admin/depenses.php" class="nav-item <?php echo $currentPage === 'depenses' ? 'active' : ''; ?>">
-                        <span class="nav-icon">&#128176;</span>
-                        Dépenses
-                    </a>
-                    <a href="<?php echo getBaseUrl(); ?>/admin/rapport-financier.php" class="nav-item <?php echo $currentPage === 'rapport-financier' ? 'active' : ''; ?>">
-                        <span class="nav-icon">&#128200;</span>
-                        Rapports
-                    </a>
+                    <!-- FINANCES -->
+                    <div class="nav-group <?php echo $activeGroup === 'finances' ? 'open' : ''; ?>">
+                        <div class="nav-group-header" onclick="toggleNavGroup(this)">
+                            <span class="nav-icon">💰</span>
+                            <span class="nav-group-title">Finances</span>
+                            <span class="nav-arrow">›</span>
+                        </div>
+                        <div class="nav-group-items">
+                            <a href="<?php echo getBaseUrl(); ?>/admin/depenses.php" class="nav-item <?php echo $currentPage === 'depenses' ? 'active' : ''; ?>">Dépenses</a>
+                            <a href="<?php echo getBaseUrl(); ?>/admin/rapport-financier.php" class="nav-item <?php echo $currentPage === 'rapport-financier' ? 'active' : ''; ?>">Rapports</a>
+                        </div>
+                    </div>
 
-                    <!-- Liens moins utilisés dans "Plus" -->
-                    <div class="nav-section-title">Plus</div>
-                    <a href="<?php echo getBaseUrl(); ?>/admin/galerie.php" class="nav-item <?php echo $currentPage === 'galerie' ? 'active' : ''; ?>">
-                        <span class="nav-icon">&#128247;</span>
-                        Galerie
-                    </a>
-                    <a href="<?php echo getBaseUrl(); ?>/admin/familles.php" class="nav-item <?php echo $currentPage === 'familles' ? 'active' : ''; ?>">
-                        <span class="nav-icon">&#128106;</span>
-                        Familles
-                    </a>
-                    <a href="<?php echo getBaseUrl(); ?>/admin/fidelite.php" class="nav-item <?php echo $currentPage === 'fidelite' ? 'active' : ''; ?>">
-                        <span class="nav-icon">&#127942;</span>
-                        Fidélité
-                    </a>
-                    <a href="<?php echo getBaseUrl(); ?>/admin/covoiturage.php" class="nav-item <?php echo $currentPage === 'covoiturage' ? 'active' : ''; ?>">
-                        <span class="nav-icon">&#128663;</span>
-                        Covoiturage
-                    </a>
-                    <a href="<?php echo getBaseUrl(); ?>/admin/social.php" class="nav-item <?php echo $currentPage === 'social' ? 'active' : ''; ?>">
-                        <span class="nav-icon">&#128240;</span>
-                        Réseaux sociaux
-                    </a>
-                    <a href="<?php echo getBaseUrl(); ?>/admin/feedback.php" class="nav-item <?php echo $currentPage === 'feedback' ? 'active' : ''; ?>">
-                        <span class="nav-icon">&#128172;</span>
-                        Feedbacks
-                    </a>
-                    <a href="<?php echo getBaseUrl(); ?>/admin/plan-salle.php" class="nav-item <?php echo $currentPage === 'plan-salle' ? 'active' : ''; ?>">
-                        <span class="nav-icon">&#127915;</span>
-                        Plans de salle
-                    </a>
+                    <!-- PLUS -->
+                    <div class="nav-group <?php echo $activeGroup === 'plus' ? 'open' : ''; ?>">
+                        <div class="nav-group-header" onclick="toggleNavGroup(this)">
+                            <span class="nav-icon">📦</span>
+                            <span class="nav-group-title">Plus</span>
+                            <span class="nav-arrow">›</span>
+                        </div>
+                        <div class="nav-group-items">
+                            <a href="<?php echo getBaseUrl(); ?>/admin/galerie.php" class="nav-item <?php echo $currentPage === 'galerie' ? 'active' : ''; ?>">Galerie</a>
+                            <a href="<?php echo getBaseUrl(); ?>/admin/familles.php" class="nav-item <?php echo $currentPage === 'familles' ? 'active' : ''; ?>">Familles</a>
+                            <a href="<?php echo getBaseUrl(); ?>/admin/fidelite.php" class="nav-item <?php echo $currentPage === 'fidelite' ? 'active' : ''; ?>">Fidélité</a>
+                            <a href="<?php echo getBaseUrl(); ?>/admin/covoiturage.php" class="nav-item <?php echo $currentPage === 'covoiturage' ? 'active' : ''; ?>">Covoiturage</a>
+                            <a href="<?php echo getBaseUrl(); ?>/admin/feedback.php" class="nav-item <?php echo $currentPage === 'feedback' ? 'active' : ''; ?>">Feedbacks</a>
+                            <a href="<?php echo getBaseUrl(); ?>/admin/plan-salle.php" class="nav-item <?php echo $currentPage === 'plan-salle' ? 'active' : ''; ?>">Plans de salle</a>
+                        </div>
+                    </div>
                 <?php endif; ?>
 
                 <?php if (isAdmin()): ?>
-                    <div class="nav-section-title">Administration</div>
-                    <a href="<?php echo getBaseUrl(); ?>/admin/users.php" class="nav-item <?php echo $currentPage === 'users' ? 'active' : ''; ?>">
-                        <span class="nav-icon">&#128100;</span>
-                        Utilisateurs
-                    </a>
-                    <a href="<?php echo getBaseUrl(); ?>/admin/settings.php" class="nav-item <?php echo $currentPage === 'settings' ? 'active' : ''; ?>">
-                        <span class="nav-icon">&#9881;</span>
-                        Paramètres
-                    </a>
-                    <a href="<?php echo getBaseUrl(); ?>/admin/statistiques.php" class="nav-item <?php echo $currentPage === 'statistiques' ? 'active' : ''; ?>">
-                        <span class="nav-icon">&#128200;</span>
-                        Statistiques
-                    </a>
-                    <a href="<?php echo getBaseUrl(); ?>/admin/import.php" class="nav-item <?php echo $currentPage === 'import' ? 'active' : ''; ?>">
-                        <span class="nav-icon">&#128229;</span>
-                        Import
-                    </a>
-                    <a href="<?php echo getBaseUrl(); ?>/admin/api.php" class="nav-item <?php echo $currentPage === 'api' ? 'active' : ''; ?>">
-                        <span class="nav-icon">&#128268;</span>
-                        API
-                    </a>
+                    <!-- ADMINISTRATION -->
+                    <div class="nav-group <?php echo $activeGroup === 'admin' ? 'open' : ''; ?>">
+                        <div class="nav-group-header" onclick="toggleNavGroup(this)">
+                            <span class="nav-icon">⚙️</span>
+                            <span class="nav-group-title">Administration</span>
+                            <span class="nav-arrow">›</span>
+                        </div>
+                        <div class="nav-group-items">
+                            <a href="<?php echo getBaseUrl(); ?>/admin/users.php" class="nav-item <?php echo $currentPage === 'users' ? 'active' : ''; ?>">Utilisateurs</a>
+                            <a href="<?php echo getBaseUrl(); ?>/admin/settings.php" class="nav-item <?php echo $currentPage === 'settings' ? 'active' : ''; ?>">Paramètres</a>
+                            <a href="<?php echo getBaseUrl(); ?>/admin/statistiques.php" class="nav-item <?php echo $currentPage === 'statistiques' ? 'active' : ''; ?>">Statistiques</a>
+                            <a href="<?php echo getBaseUrl(); ?>/admin/import.php" class="nav-item <?php echo $currentPage === 'import' ? 'active' : ''; ?>">Import</a>
+                            <a href="<?php echo getBaseUrl(); ?>/admin/api.php" class="nav-item <?php echo $currentPage === 'api' ? 'active' : ''; ?>">API</a>
+                        </div>
+                    </div>
                 <?php endif; ?>
 
                 <div class="nav-separator"></div>
 
                 <a href="<?php echo getBaseUrl(); ?>/annuaire.php" class="nav-item <?php echo $currentPage === 'annuaire' ? 'active' : ''; ?>">
-                    <span class="nav-icon">&#128218;</span>
+                    <span class="nav-icon">📖</span>
                     Annuaire
                 </a>
 
                 <a href="<?php echo getBaseUrl(); ?>/profile.php" class="nav-item <?php echo $currentPage === 'profile' ? 'active' : ''; ?>">
-                    <span class="nav-icon">&#128100;</span>
+                    <span class="nav-icon">👤</span>
                     Mon profil
                 </a>
 
                 <a href="<?php echo getBaseUrl(); ?>/logout.php" class="nav-item nav-logout">
-                    <span class="nav-icon">&#128682;</span>
+                    <span class="nav-icon">🚪</span>
                     Déconnexion
                 </a>
             </nav>
