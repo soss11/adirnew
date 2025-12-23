@@ -27,3 +27,11 @@ try {
 } catch (PDOException $e) {
     die("Erreur de connexion à la base de données. Veuillez vérifier votre configuration.");
 }
+
+/**
+ * Retourne la connexion PDO
+ */
+function getDbConnection(): PDO {
+    global $pdo;
+    return $pdo;
+}
