@@ -3,8 +3,9 @@
  * Mini CRM - Fonctions d'authentification
  */
 
-// Charger la connexion à la base de données
+// Charger la connexion à la base de données et les fonctions utilitaires
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/functions.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
