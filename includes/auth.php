@@ -129,11 +129,42 @@ function logLoginAttempt(?int $userId, bool $success): void {
 }
 
 /**
+ * Récupère l'ID de l'utilisateur connecté
+ */
+function getCurrentUserId(): ?int {
+    return isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : null;
+}
+
+/**
  * Requiert une connexion
  */
 function requireLogin(): void {
     if (!isLoggedIn()) {
         header('Location: ' . getBaseUrl() . '/index.php?error=login_required');
+        exit;
+    }
+}
+
+/**
+ * Requiert un rôle gestionnaire ou admin
+ */
+function requireGestionnaire(): void {
+    requireLogin();
+
+    if (!isGestionnaire()) {
+        header('Location: ' . getBaseUrl() . '/dashboard.php?error=access_denied');
+        exit;
+    }
+}
+
+/**
+ * Requiert un rôle admin
+ */
+function requireAdmin(): void {
+    requireLogin();
+
+    if (!isAdmin()) {
+        header('Location: ' . getBaseUrl() . '/dashboard.php?error=access_denied');
         exit;
     }
 }

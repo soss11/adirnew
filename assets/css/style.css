@@ -184,6 +184,80 @@ a:hover {
     color: var(--danger);
 }
 
+/* Collapsible Submenus */
+.nav-submenu {
+    margin-bottom: 4px;
+}
+
+.nav-submenu-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    color: var(--gray);
+    text-decoration: none;
+    border-radius: var(--radius);
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    font-size: 14px;
+}
+
+.nav-submenu-toggle:hover {
+    background: var(--light);
+    color: var(--primary);
+}
+
+.nav-submenu-toggle.active {
+    background: var(--primary-bg);
+    color: var(--primary);
+}
+
+.nav-submenu-toggle .nav-icon {
+    margin-right: 10px;
+    font-size: 18px;
+    width: 22px;
+    text-align: center;
+    opacity: 0.8;
+}
+
+.nav-submenu-toggle .nav-arrow {
+    font-size: 10px;
+    transition: transform 0.2s ease;
+    margin-left: auto;
+}
+
+.nav-submenu.open .nav-submenu-toggle .nav-arrow {
+    transform: rotate(90deg);
+}
+
+.nav-submenu-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    padding-left: 12px;
+}
+
+.nav-submenu.open .nav-submenu-content {
+    max-height: 500px;
+}
+
+.nav-submenu-content .nav-item {
+    padding: 8px 12px 8px 22px;
+    font-size: 13px;
+    margin-bottom: 1px;
+}
+
+.nav-submenu-content .nav-item .nav-icon {
+    font-size: 14px;
+    width: 18px;
+    margin-right: 8px;
+}
+
 .sidebar-footer {
     padding: 16px;
     border-top: 1px solid var(--border);
