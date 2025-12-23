@@ -2,14 +2,6 @@
  * Mini CRM - JavaScript principal
  */
 
-// Toggle submenu function (for collapsible navigation)
-function toggleSubmenu(button) {
-    const submenu = button.closest('.nav-submenu');
-    if (submenu) {
-        submenu.classList.toggle('open');
-    }
-}
-
 document.addEventListener('DOMContentLoaded', function() {
 
     // Mobile Menu Toggle
